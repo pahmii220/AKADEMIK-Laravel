@@ -1,23 +1,68 @@
+📚 Laravel SIAKAD SMK
 
-# SIAKAD-SMA-LARAVEL-11
+Sistem Informasi Akademik Digital (SIAKAD) berbasis Laravel untuk kebutuhan pengelolaan data siswa, guru, kelas, jurusan, dan berita sekolah pada tingkat SMK.
 
-SIAKAD-SMA-LARAVEL-11 adalah sebuah sistem informasi akademik untuk Sekolah Menengah Atas (SMA) yang dikembangkan menggunakan framework Laravel.
+🚀 Fitur Utama
 
-## Fitur
+✅ Manajemen Data Siswa (CRUD)
 
-- Manajemen data siswa, guru, dan staf sekolah.
-- Penjadwalan pelajaran dan pengelolaan kurikulum.
-- Penilaian dan pembuatan rapor digital.
-- Manajemen kehadiran siswa dan absensi guru.
-- Integrasi dengan sistem keuangan sekolah.
-- Pengelolaan perpustakaan sekolah.
-- Komunikasi antara sekolah, siswa, dan orang tua.
+✅ Manajemen Data Guru (CRUD)
 
-## Instalasi
+✅ Manajemen Jurusan dan Kelas
 
-Untuk menjalankan proyek ini di lingkungan lokal Anda, pastikan Anda memiliki PHP dan Composer terpasang. Kemudian ikuti langkah-langkah berikut:
+✅ Pengelolaan Berita Sekolah
 
-1. Clone repositori ini:
+✅ Autentikasi Login
 
-   ```bash
-   git clone https://github.com/wawaikhlisa24/SIAKAD-SMA-LARAVEL-11.git
+✅ Dashboard Admin
+
+✅ Cetak Laporan Siswa dan Guru
+
+📦 Cara Install & Menjalankan Proyek
+
+🛠️ Persiapan
+
+Pastikan Anda sudah menginstal:
+
+PHP >= 8.1
+
+Composer
+
+MySQL / MariaDB
+
+Node.js + npm (untuk Vite/frontend)
+
+📦 Install Dependency
+
+composer install
+npm install
+
+⚙️ Setup Environment
+
+cp .env.example .env
+
+Edit .env dan sesuaikan:
+
+DB_DATABASE=nama_database
+DB_USERNAME=root
+DB_PASSWORD=
+
+🔑 Generate App Key
+
+php artisan key:generate
+
+🛠️ Migrasi & Seeder
+
+php artisan migrate
+php artisan db:seed  # opsional jika disediakan
+
+⚡ Jalankan Vite (jika pakai Laravel 10/11)
+
+npm run dev
+
+▶️ Jalankan Server Laravel
+
+php artisan serve
+
+Akses di: http://localhost:8000
+
