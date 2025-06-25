@@ -7,6 +7,7 @@ use App\Models\FeesType;
 use App\Models\User;
 use App\Models\FeesInformation;
 use Brian2694\Toastr\Facades\Toastr;
+use App\Models\Nilai;
 
 class AccountsController extends Controller
 {
@@ -59,4 +60,5 @@ class AccountsController extends Controller
             return redirect()->back();
         }
     }
+
 }

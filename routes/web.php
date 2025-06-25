@@ -7,6 +7,7 @@ use App\Http\Controllers\GuruController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\NilaiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +111,18 @@ Route::group(['namespace' => 'App\Http\Controllers'],function()
     Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show');
     
 
+                // Nilai controller 
+    Route::middleware('auth')->group(function () {
+        Route::get('/nilai/tambah', [NilaiController::class, 'create'])->name('nilai.create');
+        Route::post('/nilai/simpan', [NilaiController::class, 'store'])->name('nilai.store');
+        Route::get('/nilai', [NilaiController::class, 'index'])->name('nilai.index');
+        Route::get('/nilai', [NilaiController::class, 'index'])->name('nilai.list');
+        Route::get('/nilai/edit/{id}', [NilaiController::class, 'edit'])->name('nilai.edit');
+        Route::post('/nilai/delete', [NilaiController::class, 'destroy'])->name('nilai.delete');
+        Route::put('/nilai/update/{id}', [NilaiController::class, 'update'])->name('nilai.update');
+        Route::get('/teachers/nilai/report', [NilaiController::class, 'reportGuru'])->name('nilai.report.guru');
+
+    });
 
     // ------------------------ student -------------------------------//
     Route::controller(StudentController::class)->group(function () {
@@ -142,6 +155,14 @@ Route::group(['namespace' => 'App\Http\Controllers'],function()
     Route::get('guru/report/pdf', [GuruController::class, 'generateReportPdf'])->name('guru.report.pdf');
 
 });
+
+// Untuk guru hanya boleh lihat data
+Route::middleware(['auth', 'role:Teachers'])->group(function () {
+    Route::get('/siswa', [StudentController::class, 'index']);
+    Route::get('/jurusan', [JurusanController::class, 'index']);
+    Route::get('/berita', [BeritaController::class, 'index']);
+});
+
         Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
 

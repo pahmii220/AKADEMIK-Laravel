@@ -5,20 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Brian2694\Toastr\Facades\Toastr;
 use PDF;
 
 class GuruController extends Controller
 {
-    // Tampilkan halaman tambah guru
+    // Tampilkan halaman tambah guru (blokir untuk teacher)
     public function create()
     {
+        if (Session::get('role_name') === 'Teacher') {
+            Toastr::error('Akses ditolak!', 'Gagal');
+            return redirect()->route('guru.list');
+        }
+
         return view('guru.add-guru');
     }
 
     // Simpan data guru
     public function store(Request $request)
     {
+        if (Session::get('role_name') === 'Teacher') {
+            Toastr::error('Akses ditolak!', 'Gagal');
+            return redirect()->route('guru.list');
+        }
+
         $request->validate([
             'nip' => 'required|unique:guru,nip|string|max:20',
             'nama_guru' => 'required|string|max:255',
@@ -45,91 +56,99 @@ class GuruController extends Controller
     // Tampilkan semua data guru
     public function index()
     {
+        \Log::info('Role saat ini: ' . Session::get('role_name'));
         $data = Guru::all();
         return view('guru.list-guru', compact('data'));
     }
-    
 
-    // Tampilkan form edit
+    // Tampilkan form edit (blokir untuk teacher)
     public function edit($id)
     {
+        if (Session::get('role_name') === 'Teacher') {
+            Toastr::error('Akses ditolak!', 'Gagal');
+            return redirect()->route('guru.list');
+        }
+ 
         $guru = Guru::findOrFail($id);
         return view('guru.edit-guru', compact('guru'));
-
     }
 
+    // Update data guru (blokir untuk teacher)
     public function update(Request $request, $id)
     {
+        if (Session::get('role_name') === 'Teacher') {
+            Toastr::error('Akses ditolak!', 'Gagal');
+            return redirect()->route('guru.list');
+        }
+
         $guru = Guru::findOrFail($id);
-    
+
         $request->validate([
             'nip' => 'required',
             'nama_guru' => 'required',
             'jenis_kelamin' => 'required',
             'tanggal_lahir' => 'required|date',
-            // validasi lain
+            'agama' => 'required',
+            'status_pegawai' => 'required',
+            'keahlian_utama' => 'required',
+            'pendidikan_terakhir' => 'required',
         ]);
-    
-        $guru->update([
-            'nip' => $request->nip,
-            'nama_guru' => $request->nama_guru,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'agama' => $request->agama,
-            'status_pegawai' => $request->status_pegawai,
-            'keahlian_utama' => $request->keahlian_utama,
-            'pendidikan_terakhir' => $request->pendidikan_terakhir,
-        ]);
+
+        $guru->update($request->all());
+
         Toastr::success('Data guru berhasil diperbarui.', 'Sukses');
-        return redirect()->route('guru.list')->with('success', 'Data guru berhasil diperbarui.');
+        return redirect()->route('guru.list');
     }
-    
-    // Hapus data guru
+
+    // Hapus data guru (blokir untuk teacher)
     public function destroy(Request $request)
     {
+        if (Session::get('role_name') === 'Teacher') {
+            Toastr::error('Akses ditolak!', 'Gagal');
+            return redirect()->route('guru.list');
+        }
+
         Guru::destroy($request->id);
         Toastr::success('Data guru berhasil dihapus');
         return redirect()->route('guru.list');
     }
-    
 
     public function showReportFilter()
-{
-    return view('guru.report-filter');
-}
-
-public function viewReport(Request $request)
-{
-    $query = Guru::query();
-
-    if ($request->filled('pendidikan')) {
-        $query->where('pendidikan_terakhir', $request->pendidikan);
+    {
+        return view('guru.report-filter');
     }
 
-    if ($request->filled('status_pegawai')) {
-        $query->where('status_pegawai', $request->status_pegawai);
+    public function viewReport(Request $request)
+    {
+        $query = Guru::query();
+
+        if ($request->filled('pendidikan')) {
+            $query->where('pendidikan_terakhir', $request->pendidikan);
+        }
+
+        if ($request->filled('status_pegawai')) {
+            $query->where('status_pegawai', $request->status_pegawai);
+        }
+
+        $guruList = $query->get();
+        return view('guru.report-filter', compact('guruList'));
     }
 
-    $guruList = $query->get();
+    public function generateReportPdf(Request $request)
+    {
+        $query = Guru::query();
 
-    return view('guru.report-filter', compact('guruList'));
-}
+        if ($request->filled('pendidikan')) {
+            $query->where('pendidikan_terakhir', $request->pendidikan);
+        }
 
-public function generateReportPdf(Request $request)
-{
-    $query = Guru::query();
+        if ($request->filled('status_pegawai')) {
+            $query->where('status_pegawai', $request->status_pegawai);
+        }
 
-    if ($request->filled('pendidikan')) {
-        $query->where('pendidikan_terakhir', $request->pendidikan);
+        $guruList = $query->get();
+
+        $pdf = PDF::loadView('guru.report', compact('guruList'))->setPaper('a4', 'landscape');
+        return $pdf->download('laporan_guru.pdf');
     }
-
-    if ($request->filled('status_pegawai')) {
-        $query->where('status_pegawai', $request->status_pegawai);
-    }
-
-    $guruList = $query->get();
-
-    $pdf = PDF::loadView('guru.report', compact('guruList'))->setPaper('a4', 'landscape');
-    return $pdf->download('laporan_guru.pdf');
-}
 }

@@ -28,6 +28,7 @@ class StudentController extends Controller
     /** student add page */
     public function studentAdd()
     {
+
         $jurusanList = Jurusan::all();
         return view('student.add-student', compact('jurusanList'));
     }
@@ -88,6 +89,7 @@ class StudentController extends Controller
         $jurusanList = Jurusan::all(); // ambil semua data jurusan
     
         return view('student.edit-student', compact('studentEdit', 'jurusanList'));
+
     }
     
 
@@ -145,6 +147,10 @@ class StudentController extends Controller
             Toastr::error('Update Siwa Gagal.', 'Error');
             return redirect()->route('student');
         }
+        if (auth()->user()->role_name !== 'admin') {
+            abort(403, 'Hanya admin yang dapat mengupdate data siswa.');
+        }
+
     }
 
     /** student delete */
@@ -163,6 +169,10 @@ class StudentController extends Controller
             DB::rollback();
             Toastr::error('Data Siswa Gagal di Hapus :(', 'Error');
             return redirect()->route('student');
+        }
+
+        if (auth()->user()->role_name !== 'admin') {
+            abort(403, 'Hanya admin yang dapat menghapus data siswa.');
         }
     }
 

@@ -1,6 +1,5 @@
 @extends('layouts.master')
 
-
 @section('content')
     {!! Toastr::message() !!}
     <div class="page-wrapper">
@@ -27,13 +26,16 @@
                                         <h3 class="page-title">Daftar Guru</h3>
                                     </div>
 
-                                    <div class="col-auto text-end float-end ms-auto download-grp">
-                                        <a href="{{ route('guru.report.filter') }}" class="btn btn-success me-2">
-                                            <i class="fas fa-print"></i>                                    </a>
-                                        <a href="{{ route('guru.add') }}" class="btn btn-primary">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
-                                    </div>
+                                    @if(Session::get('role_name') !== 'Teacher')
+                                        <div class="col-auto text-end float-end ms-auto download-grp">
+                                            <a href="{{ route('guru.report.filter') }}" class="btn btn-success me-2">
+                                                <i class="fas fa-print"></i>
+                                            </a>
+                                            <a href="{{ route('guru.add') }}" class="btn btn-primary">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -73,17 +75,20 @@
                                                 <td>{{ $guru->tahun_aktif_kerja }}</td>
                                                 <td class="text-end">
                                                     <div class="actions">
-                                                        <a href="{{ route('guru.edit', $guru->id) }}"
-                                                            class="btn btn-sm bg-warning-light">
-                                                            <i class="far fa-edit me-2"></i>
-                                                        </a>
-                                                        <button class="btn btn-sm bg-danger-light guru_delete"
-                                                            data-bs-toggle="modal" data-bs-target="#guruDelete"
-                                                            data-id="{{ $guru->id }}">
-                                                            <i class="far fa-trash-alt me-2"></i>
-                                                        </button>
+                                                        @if(Session::get('role_name') !== 'Teacher')
+                                                            <a href="{{ route('guru.edit', $guru->id) }}" class="btn btn-sm bg-warning-light">
+                                                                <i class="far fa-edit me-2"></i>
+                                                            </a>
+                                                            <button class="btn btn-sm bg-danger-light guru_delete" data-bs-toggle="modal" data-bs-target="#guruDelete"
+                                                                data-id="{{ $guru->id }}">
+                                                                <i class="far fa-trash-alt me-2"></i>
+                                                            </button>
+                                                        @else
+                                                            <span class="text-muted">Akses dibatasi</span>
+                                                        @endif
                                                     </div>
                                                 </td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -91,33 +96,35 @@
                             </div>
 
                             {{-- Modal Delete --}}
-                            <div class="modal custom-modal fade" id="guruDelete" role="dialog">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-body">
-                                            <div class="form-header">
-                                                <h3>Hapus Guru</h3>
-                                                <p>Yakin ingin menghapus data ini?</p>
-                                            </div>
-                                            <div class="modal-btn delete-action">
-                                                <form action="{{ route('guru.delete') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="id" id="delete_guru_id">
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <button type="submit" class="btn btn-primary">Hapus</button>
+                            @if(Session::get('role_name') !== 'Teacher')
+                                <div class="modal custom-modal fade" id="guruDelete" role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                <div class="form-header">
+                                                    <h3>Hapus Guru</h3>
+                                                    <p>Yakin ingin menghapus data ini?</p>
+                                                </div>
+                                                <div class="modal-btn delete-action">
+                                                    <form action="{{ route('guru.delete') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="id" id="delete_guru_id">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <button type="submit" class="btn btn-primary">Hapus</button>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <a href="#" class="btn btn-primary"
+                                                                    data-bs-dismiss="modal">Batal</a>
+                                                            </div>
                                                         </div>
-                                                        <div class="col-6">
-                                                            <a href="#" class="btn btn-primary"
-                                                                data-bs-dismiss="modal">Batal</a>
-                                                        </div>
-                                                    </div>
-                                                </form>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
                             {{-- End Modal --}}
                         </div>
                     </div>
